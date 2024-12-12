@@ -10,7 +10,7 @@ class PasswordManager(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("500x700")
+        self.geometry("600x700")
         self.title("Password Manager")
 
         settings = self.load_settings()
@@ -24,13 +24,13 @@ class PasswordManager(ctk.CTk):
 
         self.widgets()
 
-    def create_label(self, frame, text, font, row, column, padx, pady, sticky="w"):
+    def create_label(self, frame, text, font, row, column, padx, pady, sticky="w", columnspan=1):
         label = ctk.CTkLabel(
             frame, 
             text=text, 
             font=font
         )
-        label.grid(row=row, column=column, padx=padx, pady=pady, sticky=sticky)
+        label.grid(row=row, column=column, padx=padx, pady=pady, sticky=sticky, columnspan=columnspan)
 
     def create_button(self, frame, text, command, fg_color, hover_color, height, width, row, column, padx, pady, sticky="w"):
         button = ctk.CTkButton(
@@ -208,23 +208,40 @@ class PasswordManager(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.create_label(self, "My Passwords", ("Helvetica", 20), 0, 0, 20, 20, "w")
-        
-        self.create_button(self, "Go Back", self.homepage, "#DAA520", "#B8860B", 32, 60, 0, 0, 20, 20, "e")
+        center_frame = ctk.CTkScrollableFrame(self)
+        center_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
-        center_frame = ctk.CTkFrame(self)
-        center_frame.grid(row=1, column=0, padx=20, pady=20)
+        center_frame.grid_rowconfigure(0, weight=1)
+        center_frame.grid_rowconfigure(1, weight=1)
+        center_frame.grid_rowconfigure(2, weight=1)
+        center_frame.grid_rowconfigure(3, weight=1)
+        center_frame.grid_rowconfigure(4, weight=1)
+        center_frame.grid_columnconfigure(0, weight=1)
+
+        self.create_label(center_frame, "My Passwords", ("Helvetica", 20), 0, 0, 20, 20, "w", 4)
+        
+        self.create_button(center_frame, "Go Back", self.homepage, "#DAA520", "#B8860B", 32, 60, 0, 4, 20, 20, "e")
 
         columns = ["Website", "Website URL", "Username", "Email", "Password"]
-
-        for i, column in enumerate(columns):
-            self.create_label(center_frame, column, ("Helvetica", 15), 0, i, 5, 10)
-
-        passwords = self.cursor.execute("""SELECT * FROM passwords WHERE user_id = :user_id""", {"user_id": self.user_id}).fetchall()
         
-        if not passwords:
-            self.create_label(center_frame, "No Passwords...", ("Helvetica", 20), 0, 0, 5, 10)
+        passwords = self.cursor.execute("""SELECT * FROM passwords WHERE user_id = :user_id""", {"user_id": self.user_id}).fetchall()
+        indexes_to_pass = [0, 1]
 
+        if not passwords:
+            self.create_label(center_frame, "No Passwords...", ("Helvetica", 20), 1, 0, 5, 10)
+
+        else:
+            for i, column in enumerate(columns):
+                self.create_label(center_frame, column, ("Helvetica", 15), 1, i, 5, 10)
+                
+            for j, attributes in enumerate(passwords):
+                for k, attribute in enumerate(attributes):
+                    if k not in indexes_to_pass:
+                        if not attribute:
+                            self.create_label(center_frame, "-", ("Arial", 12), j+2, k-2, 10, 10)
+                        else:
+                            self.create_label(center_frame, attribute, ("Arial", 12), j+2, k-2, 10, 10)
+    
     def settings_page(self):
         return
 
