@@ -243,7 +243,46 @@ class PasswordManager(ctk.CTk):
                             self.create_label(center_frame, attribute, ("Arial", 12), j+2, k-2, 10, 10)
     
     def settings_page(self):
-        return
+        for widget in self.winfo_children():
+            widget.grid_forget()
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        center_frame = ctk.CTkFrame(self)
+        center_frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+
+        for i in range(9):
+            if i == 0:
+                center_frame.grid_rowconfigure(i, weight=0)
+            elif i == 1 or i == 4:
+                center_frame.grid_rowconfigure(i, weight=3)
+            else:
+                center_frame.grid_rowconfigure(i, weight=1)
+
+        for i in range(10):
+            if i == 0:
+                center_frame.grid_columnconfigure(i, weight=1)
+            else:
+                center_frame.grid_columnconfigure(i, weight=2)
+
+        self.create_label(center_frame, "Settings", ("Arial", 36, "bold"), 0, 0, 20, 20, "nw")
+
+        self.create_button(center_frame, "Go Back", self.homepage, "red", "red", 32, 100, 0, 9, 20, 20, "ne")
+        
+        self.create_label(center_frame, "Theme & Color", ("Arial", 24), 1, 0, 20, (20, 0), "w")
+
+        themes = [
+            {"text": "dark", "theme": "dark"},
+            {"text": "light", "theme": "light"},
+            {"text": "system", "theme": "system"}
+        ]
+
+        self.create_label(center_frame, "Theme", ("Arial", 20), 2, 0, 20, 0)
+
+        for index, theme in enumerate(themes):
+            # self.create_button(center_frame, theme["text"], lambda theme=theme: self.set_theme(theme["theme"]), "red", "red", 30, 50, 2, index+1, 0, 0)
+            self.create_button(center_frame, theme["text"], "", "red", "red", 30, 50, 2, index+1, 0, 0)
 
     def signup(self, username, email, password):
         def value_exists(column, value):
