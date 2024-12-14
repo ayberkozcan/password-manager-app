@@ -1,5 +1,5 @@
 import os
-from tkinter import messagebox
+from tkinter import PhotoImage, messagebox
 import sqlite3
 import customtkinter as ctk
 import json
@@ -18,7 +18,19 @@ class PasswordManager(ctk.CTk):
         self.language = settings.get("language")
 
         ctk.set_appearance_mode(self.current_theme)
-        # self.load_language(self.language)
+        self.load_language(self.language)
+
+        self.widget_texts = {}
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        self.edit_icon_path = os.path.join(BASE_DIR, "icons/edit_icon.png")
+        self.delete_icon_path = os.path.join(BASE_DIR, "icons/delete_icon.png")
+        self.go_back_icon_path = os.path.join(BASE_DIR, "icons/go_back_icon_icon.png")
+
+        self.english_icon_path = os.path.join(BASE_DIR, "icons/languages/english_icon.png")
+        self.turkish_icon_path = os.path.join(BASE_DIR, "icons/languages/turkish_icon.png")
+        self.german_icon_path = os.path.join(BASE_DIR, "icons/languages/german_icon.png")
 
         self.connect_database()
 
@@ -32,7 +44,7 @@ class PasswordManager(ctk.CTk):
         )
         label.grid(row=row, column=column, padx=padx, pady=pady, sticky=sticky, columnspan=columnspan)
 
-    def create_button(self, frame, text, command, fg_color, hover_color, height, width, row, column, padx, pady, sticky="w"):
+    def create_button(self, frame, text, command, fg_color, hover_color, height, width, row, column, padx, pady, sticky="w", hover=""):
         button = ctk.CTkButton(
             frame,
             text=text,
@@ -40,7 +52,8 @@ class PasswordManager(ctk.CTk):
             fg_color=fg_color,
             hover_color=hover_color,
             height=height,
-            width=width
+            width=width,
+            hover=hover
         )
         button.grid(row=row, column=column, padx=padx, pady=pady, sticky=sticky)
 
@@ -100,14 +113,14 @@ class PasswordManager(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.create_label(self, "Securely store and manage\nyour passwords", ("Helvetica", 20), 0, 0, 20, 20, "nsew")
+        self.widget_texts["secure"] = self.create_label(self, self.get_text("secure"), ("Helvetica", 20), 0, 0, 20, 20, "nsew")
 
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.create_button(center_frame, "Login", self.login_page, "green", "#006400", 32, 140, 0, 0, 20, 20)
-        self.create_button(center_frame, "Sign up", self.signup_page, "red", "#8B0000", 32, 140, 1, 0, 20, 20)
-        self.create_button(center_frame, "Quit", self.quit, "#DAA520", "#B8860B", 32, 140, 2, 0, 20, 20)
+        self.widget_texts["login"] = self.create_button(center_frame, self.get_text("login"), self.login_page, "green", "#006400", 32, 140, 0, 0, 20, 20)
+        self.widget_texts["signup"] = self.create_button(center_frame, self.get_text("signup"), self.signup_page, "red", "#8B0000", 32, 140, 1, 0, 20, 20)
+        self.widget_texts["quit"] = self.create_button(center_frame, self.get_text("quit"), self.quit, "#DAA520", "#B8860B", 32, 140, 2, 0, 20, 20)
 
     def login_page(self):
         for widget in self.winfo_children():
@@ -116,19 +129,19 @@ class PasswordManager(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.create_label(self, "Login", ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
+        self.widget_texts["login"] = self.create_label(self, self.get_text("login"), ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
         
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.create_label(center_frame, "Username", ("Helvetica", 15), 0, 0, 20, 5)
+        self.widget_texts["username"] = self.create_label(center_frame, self.get_text("username"), ("Helvetica", 15), 0, 0, 20, 5)
         username_entry = self.create_entry(center_frame, "...", 200, "", 1, 0, 20, 0)
 
-        self.create_label(center_frame, "Password", ("Helvetica", 15), 2, 0, 20, 5)
+        self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 2, 0, 20, 5)
         password_entry = self.create_entry(center_frame, "...", 200, "*", 3, 0, 20, 0)
 
-        self.create_button(center_frame, "Submit", lambda: self.login(username_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 4, 0, 20, (20, 10))
-        self.create_button(center_frame, "Go Back", self.welcome_page, "#DAA520", "#B8860B", 32, 200, 5, 0, 20, 0)
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.login(username_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 4, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.welcome_page, "#DAA520", "#B8860B", 32, 200, 5, 0, 20, 0)
 
     def signup_page(self):
         for widget in self.winfo_children():
@@ -137,22 +150,22 @@ class PasswordManager(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.create_label(self, "Sign Up", ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
+        self.widget_texts["signup"] = self.create_label(self, self.get_text("signup"), ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
         
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.create_label(center_frame, "Username", ("Helvetica", 15), 0, 0, 20, 5)
+        self.widget_texts["username"] = self.create_label(center_frame, self.get_text("username"), ("Helvetica", 15), 0, 0, 20, 5)
         username_entry = self.create_entry(center_frame, "...", 200, "", 1, 0, 20, 0)
 
         self.create_label(center_frame, "Email", ("Helvetica", 15), 2, 0, 20, 5)
         email_entry = self.create_entry(center_frame, "...", 200, "", 3, 0, 20, 0)
 
-        self.create_label(center_frame, "Password", ("Helvetica", 15), 4, 0, 20, 5)
+        self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 4, 0, 20, 5)
         password_entry = self.create_entry(center_frame, "...", 200, "*", 5, 0, 20, 0)
         
-        self.create_button(center_frame, "Submit", lambda: self.signup(username_entry.get(), email_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 6, 0, 20, (20, 10))
-        self.create_button(center_frame, "Go Back", self.welcome_page, "#DAA520", "#B8860B", 32, 200, 7, 0, 20, 0)
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.signup(username_entry.get(), email_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 6, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.welcome_page, "#DAA520", "#B8860B", 32, 200, 7, 0, 20, 0)
 
     def homepage(self):
         for widget in self.winfo_children():
@@ -161,15 +174,15 @@ class PasswordManager(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.create_label(self, "Welcome!", ("Helvetica", 20), 0, 0, 20, 20, "nsew")
+        self.widget_texts["welcome"] = self.create_label(self, self.get_text("welcome"), ("Helvetica", 20), 0, 0, 20, 20, "nsew")
 
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.create_button(center_frame, "Add Password", self.add_password_page, "green", "#006400", 32, 140, 0, 0, 20, 20)
-        self.create_button(center_frame, "My Passwords", self.my_passwords_page, "blue", "darkblue", 32, 140, 1, 0, 20, 20)
-        self.create_button(center_frame, "Settings", self.settings_page, "#DAA520", "#B8860B", 32, 140, 2, 0, 20, 20)
-        self.create_button(center_frame, "Logout", self.welcome_page, "red", "#8B0000", 32, 140, 3, 0, 20, 20)
+        self.widget_texts["addpassword"] = self.create_button(center_frame, self.get_text("addpassword"), self.add_password_page, "green", "#006400", 32, 140, 0, 0, 20, 20)
+        self.widget_texts["mypasswords"] = self.create_button(center_frame, self.get_text("mypasswords"), self.my_passwords_page, "blue", "darkblue", 32, 140, 1, 0, 20, 20)
+        self.widget_texts["settings"] = self.create_button(center_frame, self.get_text("settings"), self.settings_page, "#DAA520", "#B8860B", 32, 140, 2, 0, 20, 20)
+        self.widget_texts["logout"] = self.create_button(center_frame, self.get_text("logout"), self.welcome_page, "red", "#8B0000", 32, 140, 3, 0, 20, 20)
 
     def add_password_page(self):
         for widget in self.winfo_children():
@@ -178,28 +191,28 @@ class PasswordManager(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.create_label(self, "Add Password", ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
+        self.widget_texts["addpassword"] = self.create_label(self, self.get_text("addpassword"), ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
         
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.create_label(center_frame, "Website", ("Helvetica", 15), 0, 0, 20, 5)
+        self.widget_texts["website"] = self.create_label(center_frame, self.get_text("website"), ("Helvetica", 15), 0, 0, 20, 5)
         website_entry = self.create_entry(center_frame, "...", 200, "", 1, 0, 20, 0)
 
-        self.create_label(center_frame, "Website URL (optional)", ("Helvetica", 15), 2, 0, 20, 5)
+        self.widget_texts["websiteurloptional"] = self.create_label(center_frame, self.get_text("websiteurloptional"), ("Helvetica", 15), 2, 0, 20, 5)
         website_url = self.create_entry(center_frame, "...", 200, "", 3, 0, 20, 0)
 
-        self.create_label(center_frame, "Username (optional)", ("Helvetica", 15), 4, 0, 20, 5)
+        self.widget_texts["usernameoptional"] = self.create_label(center_frame, self.get_text("usernameoptional"), ("Helvetica", 15), 4, 0, 20, 5)
         username_entry = self.create_entry(center_frame, "...", 200, "", 5, 0, 20, 0)
 
-        self.create_label(center_frame, "Email (optional)", ("Helvetica", 15), 6, 0, 20, 5)
+        self.widget_texts["emailoptional"] = self.create_label(center_frame, self.get_text("emailoptional"), ("Helvetica", 15), 6, 0, 20, 5)
         email_entry = self.create_entry(center_frame, "...", 200, "", 7, 0, 20, 0)
 
-        self.create_label(center_frame, "Password", ("Helvetica", 15), 8, 0, 20, 5)
+        self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 8, 0, 20, 5)
         password_entry = self.create_entry(center_frame, "...", 200, "*", 9, 0, 20, 0)
         
-        self.create_button(center_frame, "Submit", lambda: self.add_password(self.user_id, website_entry.get(), website_url.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 10, 0, 20, (20, 10))
-        self.create_button(center_frame, "Go Back", self.homepage, "#DAA520", "#B8860B", 32, 200, 11, 0, 20, 0)
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.add_password(self.user_id, website_entry.get(), website_url.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 10, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#DAA520", "#B8860B", 32, 200, 11, 0, 20, 0)
     
     def my_passwords_page(self):
         for widget in self.winfo_children():
@@ -218,9 +231,9 @@ class PasswordManager(ctk.CTk):
         center_frame.grid_rowconfigure(4, weight=1)
         center_frame.grid_columnconfigure(0, weight=1)
 
-        self.create_label(center_frame, "My Passwords", ("Helvetica", 20), 0, 0, 20, 20, "w", 4)
+        self.widget_texts["mypasswords"] = self.create_label(center_frame, self.get_text("mypasswords"), ("Helvetica", 20), 0, 0, 20, 20, "w", 4)
         
-        self.create_button(center_frame, "Go Back", self.homepage, "#DAA520", "#B8860B", 32, 60, 0, 4, 20, 20, "e")
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#DAA520", "#B8860B", 32, 60, 0, 4, 20, 20, "e")
 
         columns = ["Website", "Website URL", "Username", "Email", "Password"]
         
@@ -228,11 +241,11 @@ class PasswordManager(ctk.CTk):
         indexes_to_pass = [0, 1]
 
         if not passwords:
-            self.create_label(center_frame, "No Passwords...", ("Helvetica", 20), 1, 0, 5, 10)
+            self.widget_texts["nopasswords"] = self.create_label(center_frame, self.get_text("nopasswords"), ("Helvetica", 20), 1, 0, 5, 10)
 
         else:
             for i, column in enumerate(columns):
-                self.create_label(center_frame, column, ("Helvetica", 15), 1, i, 5, 10)
+                self.widget_texts["column"] = self.create_label(center_frame, self.get_text(column), ("Helvetica", 15), 1, i, 5, 10)
                 
             for j, attributes in enumerate(passwords):
                 for k, attribute in enumerate(attributes):
@@ -266,23 +279,76 @@ class PasswordManager(ctk.CTk):
             else:
                 center_frame.grid_columnconfigure(i, weight=2)
 
-        self.create_label(center_frame, "Settings", ("Arial", 36, "bold"), 0, 0, 20, 20, "nw")
+        self.widget_texts["settings"] = self.create_label(center_frame, self.get_text("settings"), ("Arial", 36, "bold"), 0, 0, 20, 20, "nw")
 
-        self.create_button(center_frame, "Go Back", self.homepage, "red", "red", 32, 100, 0, 9, 20, 20, "ne")
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "red", "red", 32, 100, 0, 9, 20, 20, "ne")
         
-        self.create_label(center_frame, "Theme & Color", ("Arial", 24), 1, 0, 20, (20, 0), "w")
+        self.widget_texts["themecolor"] = self.create_label(center_frame, self.get_text("themecolor"), ("Arial", 24), 1, 0, 20, (20, 0), "w")
 
         themes = [
-            {"text": "dark", "theme": "dark"},
-            {"text": "light", "theme": "light"},
-            {"text": "system", "theme": "system"}
+            {"text": self.get_text("dark"), "theme": "dark"},
+            {"text": self.get_text("light"), "theme": "light"},
+            {"text": self.get_text("system"), "theme": "system"}
         ]
 
-        self.create_label(center_frame, "Theme", ("Arial", 20), 2, 0, 20, 0)
+        self.widget_texts["themelabel"] = self.create_label(center_frame, self.get_text("themelabel"), ("Arial", 20), 2, 0, 20, 0)
 
         for index, theme in enumerate(themes):
             # self.create_button(center_frame, theme["text"], lambda theme=theme: self.set_theme(theme["theme"]), "red", "red", 30, 50, 2, index+1, 0, 0)
-            self.create_button(center_frame, theme["text"], "", "red", "red", 30, 50, 2, index+1, 0, 0)
+            self.widget_texts["theme"] = self.create_button(center_frame, theme["text"], "", "red", "red", 30, 50, 2, index+1, 0, 0)
+
+        colors = [
+            {"text": self.get_text("blue"), "color": "blue"},
+            {"text": self.get_text("dark-blue"), "color": "dark-blue"},
+            {"text": self.get_text("green"), "color": "green"},
+        ]
+
+        self.widget_texts["colorlabel"] = self.create_label(center_frame, self.get_text("colorlabel"), ("Arial", 20), 3, 0, 20, 0)
+
+        for index, color in enumerate(colors):
+            # self.create_button(center_frame, theme["text"], lambda theme=theme: self.set_theme(theme["theme"]), "red", "red", 30, 50, 2, index+1, 0, 0)
+            self.widget_texts["color"] = self.create_button(center_frame, color["text"], "", "red", "red", 30, 50, 2, index+1, 0, 0)
+
+        self.widget_texts["language"] = self.create_label(center_frame, self.get_text("language"), ("Arial", 20), 4, 0, 20, 20)
+
+        english_icon = PhotoImage(file=self.english_icon_path)
+        english_icon = english_icon.subsample(12, 12)
+
+        turkish_icon = PhotoImage(file=self.turkish_icon_path)
+        turkish_icon = turkish_icon.subsample(12, 12)
+
+        german_icon = PhotoImage(file=self.german_icon_path)
+        german_icon = german_icon.subsample(12, 12)
+
+        english_button = ctk.CTkButton(
+            center_frame, 
+            text="", 
+            image=english_icon,
+            command=lambda: self.change_language("en"),
+            fg_color="transparent",
+            hover=None
+        )
+        english_button.grid(row=4, column=1, padx=20, pady=20, sticky="w")
+
+        turkish_button = ctk.CTkButton(
+            center_frame, 
+            text="", 
+            image=turkish_icon,
+            command=lambda: self.change_language("tr"),
+            fg_color="transparent",
+            hover=None
+        )
+        turkish_button.grid(row=4, column=2, padx=20, pady=20, sticky="w")
+
+        german_button = ctk.CTkButton(
+            center_frame, 
+            text="", 
+            image=german_icon,
+            command=lambda: self.change_language("de"),
+            fg_color="transparent",
+            hover=None
+        )
+        german_button.grid(row=4, column=3, padx=20, pady=20, sticky="w")
 
     def signup(self, username, email, password):
         def value_exists(column, value):
@@ -432,6 +498,30 @@ class PasswordManager(ctk.CTk):
         )
 
         self.add_password_page()
+
+    def change_language(self, language):
+        self.language = language
+
+        self.load_language(self.language)
+
+        for widget_key, widget in self.widget_texts.items():
+            widget.configure(text=self.get_text(widget_key))
+        
+        settings = self.load_settings()
+        settings["language"] = self.language
+
+        with open("data/settings.json", "w") as file:
+            json.dump(settings, file, indent=4)
+
+        # self.settings_page()
+
+    def load_language(self, lang_code):
+        with open("data/localization/language.json", "r", encoding="utf-8") as file:
+            self.languages = json.load(file)
+        self.language = lang_code
+
+    def get_text(self, key):
+        return self.languages.get(self.language, {}).get(key, key)
 
     def quit(self):
         self.destroy()
