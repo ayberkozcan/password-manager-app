@@ -1,3 +1,4 @@
+from functools import partial
 import os
 from tkinter import PhotoImage, messagebox
 import sqlite3
@@ -10,7 +11,7 @@ class PasswordManager(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("700x700")
+        self.geometry("1000x700")
         self.title("Password Manager")
 
         settings = self.load_settings()
@@ -26,6 +27,8 @@ class PasswordManager(ctk.CTk):
 
         self.edit_icon_path = os.path.join(BASE_DIR, "icons/edit_icon.png")
         self.delete_icon_path = os.path.join(BASE_DIR, "icons/delete_icon.png")
+        self.eye_icon_path = os.path.join(BASE_DIR, "icons/eye_icon.png")
+        self.eye_blind_icon_path = os.path.join(BASE_DIR, "icons/eye_blind_icon.png")
         self.go_back_icon_path = os.path.join(BASE_DIR, "icons/go_back_icon_icon.png")
 
         self.english_icon_path = os.path.join(BASE_DIR, "icons/languages/english_icon.png")
@@ -34,7 +37,9 @@ class PasswordManager(ctk.CTk):
 
         self.connect_database()
         
-        self.widgets()
+        self.user_id=1
+        self.my_passwords_page()
+        # self.widgets()
 
     def create_label(self, frame, text, font, row, column, padx, pady, sticky="w", columnspan=1):
         label = ctk.CTkLabel(
@@ -286,6 +291,7 @@ class PasswordManager(ctk.CTk):
         center_frame.grid_columnconfigure(4, weight=1)
         center_frame.grid_columnconfigure(5, weight=1)
         center_frame.grid_columnconfigure(6, weight=1)
+        center_frame.grid_columnconfigure(7, weight=1)
         
         edit_icon = PhotoImage(file=self.edit_icon_path)
         edit_icon = edit_icon.subsample(25, 25)
@@ -293,35 +299,72 @@ class PasswordManager(ctk.CTk):
         delete_icon = PhotoImage(file=self.delete_icon_path)
         delete_icon = delete_icon.subsample(25, 25)
         
+        eye_icon = PhotoImage(file=self.eye_icon_path)
+        eye_icon = eye_icon.subsample(25, 25)
+        
+        eye_blind_icon = PhotoImage(file=self.eye_blind_icon_path)
+        eye_blind_icon = eye_blind_icon.subsample(25, 25)
+        
         self.widget_texts["mypasswords"] = self.create_label(center_frame, self.get_text("mypasswords"), ("Arial", 36, "bold"), 0, 0, 20, 20, "nw", 10)
         
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#DAA520", "#B8860B", 32, 100, 0, 6, (0, 10), 20, "ne", 2)
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#DAA520", "#B8860B", 32, 100, 0, 7, (0, 10), 20, "ne", 2)
 
-        columns = ["Website", "Website URL", "Username", "Email", "Password"]
+        columns = ["Website", "Website URL", "Username", "Email", "Password", "Show"]
         
-        passwords = self.cursor.execute("""SELECT * FROM passwords WHERE user_id = :user_id""", {"user_id": self.user_id}).fetchall()
+        password_logs = self.cursor.execute("""SELECT * FROM passwords WHERE user_id = :user_id""", {"user_id": self.user_id}).fetchall()
         indexes_to_pass = [0, 1]
+        
+        passwords = self.cursor.execute("""SELECT password FROM passwords WHERE user_id = :user_id""", {"user_id": self.user_id}).fetchall()
 
-        if not passwords:
+        # eye_button = ctk.CTkButton(center_frame, image=eye_icon, width=30, height=30, corner_radius=50, text="", fg_color="transparent", hover="None")
+        # eye_blind_button = ctk.CTkButton(center_frame, image=eye_blind_icon, width=30, height=30, corner_radius=50, text="", command=lambda: show_password(password_id), fg_color="green", hover="None")
+
+        current_eye = eye_icon
+
+        if not password_logs:
             self.widget_texts["nopasswords"] = self.create_label(center_frame, self.get_text("nopasswords"), ("Helvetica", 20), 1, 0, 0, 10)
 
         else:
             for i, column in enumerate(columns):
                 self.widget_texts["column"] = self.create_label(center_frame, self.get_text(column), ("Helvetica", 15), 1, i, 5, 10)
                 
-            for j, attributes in enumerate(passwords):
+            for j, attributes in enumerate(password_logs):
                 for k, attribute in enumerate(attributes):
                     if k not in indexes_to_pass:
                         if not attribute:
                             self.create_label(center_frame, "-", ("Arial", 12), j+2, k-2, 5, 10)
                         else:
-                            self.create_label(center_frame, attribute, ("Arial", 12), j+2, k-2, 5, 10)
+                            if k == 6:
+                                password = passwords[j][0]
+
+                                password_label = ctk.CTkLabel(center_frame, text="******", font=("Arial", 12))
+                                password_label.grid(row=j+2, column=k-2, padx=5, pady=10, sticky="w")
+
+                                current_eye_state = {"icon": eye_blind_icon}
+
+                                def toggle_password(password_label, password, eye_button, current_eye_state):                                    
+                                    if current_eye_state["icon"] == eye_blind_icon:
+                                        password_text = password
+                                        current_eye_state["icon"] = eye_icon
+                                    else:
+                                        password_text = "******"
+                                        current_eye_state["icon"] = eye_blind_icon
+                                    
+                                    eye_button.configure(image=current_eye_state["icon"])
+                                    password_label.configure(text=password_text)
+
+                                eye_button = ctk.CTkButton(center_frame, image=current_eye, width=30, height=30, corner_radius=50, text="", command=partial(toggle_password, password_label, password, None, current_eye_state), fg_color="transparent", hover="None")
+                                
+                                eye_button.configure(command=partial(toggle_password, password_label, password, eye_button, current_eye_state))
+                                eye_button.grid(row=j+2, column=k-1, padx=5, pady=10, sticky="w")
+                            else:
+                                self.create_label(center_frame, attribute, ("Arial", 12), j+2, k-2, 5, 10)
                             
                 edit_button = ctk.CTkButton(center_frame, image=edit_icon, width=30, height=30, corner_radius=50, text="", fg_color="green", hover="None")
-                edit_button.grid(row=j+2, column=k-1, padx=0, pady=10)    
+                edit_button.grid(row=j+2, column=k, padx=0, pady=10)    
                 delete_button = ctk.CTkButton(center_frame, image=delete_icon, width=30, height=30, corner_radius=50, text="", fg_color="red", hover="None")
-                delete_button.grid(row=j+2, column=k, padx=0, pady=10)    
-    
+                delete_button.grid(row=j+2, column=k+1, padx=0, pady=10)    
+
     def settings_page(self):
         for widget in self.winfo_children():
             widget.grid_forget()
