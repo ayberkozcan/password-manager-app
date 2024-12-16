@@ -37,9 +37,9 @@ class PasswordManager(ctk.CTk):
 
         self.connect_database()
         
-        self.user_id=1
-        self.my_passwords_page()
-        # self.widgets()
+        # self.user_id=1
+        # self.my_passwords_page()
+        self.widgets()
 
     def create_label(self, frame, text, font, row, column, padx, pady, sticky="w", columnspan=1):
         label = ctk.CTkLabel(
@@ -362,7 +362,7 @@ class PasswordManager(ctk.CTk):
                             
                 edit_button = ctk.CTkButton(center_frame, image=edit_icon, width=30, height=30, corner_radius=50, text="", fg_color="green", hover="None")
                 edit_button.grid(row=j+2, column=k, padx=0, pady=10)    
-                delete_button = ctk.CTkButton(center_frame, image=delete_icon, width=30, height=30, corner_radius=50, text="", fg_color="red", hover="None")
+                delete_button = ctk.CTkButton(center_frame, image=delete_icon, width=30, height=30, corner_radius=50, text="", command=lambda id=password_logs[j][0]: self.delete_password(id), fg_color="red", hover="None")
                 delete_button.grid(row=j+2, column=k+1, padx=0, pady=10)    
 
     def settings_page(self):
@@ -611,6 +611,20 @@ class PasswordManager(ctk.CTk):
         )
 
         self.add_password_page()
+
+    def delete_password(self, id):
+        title_confirm = self.get_text("delete_password_title")
+        message_confirm = self.get_text("delete_password_message")
+        title_success = self.get_text("delete_success_title")
+        message_success = self.get_text("delete_success_message")
+
+        confirm = messagebox.askyesno(title_confirm, message_confirm)
+
+        if confirm:
+            self.cursor.execute("DELETE FROM passwords WHERE id = ?", (id,))
+            self.conn.commit()
+            messagebox.showinfo(title_success, message_success)
+            self.my_passwords_page()
 
     def change_language(self, language):
         self.language = language
