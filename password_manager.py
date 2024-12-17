@@ -123,9 +123,9 @@ class PasswordManager(ctk.CTk):
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.widget_texts["login"] = self.create_button(center_frame, self.get_text("login"), self.login_page, "green", "#006400", 32, 200, 0, 0, 20, 20)
-        self.widget_texts["signup"] = self.create_button(center_frame, self.get_text("signup"), self.signup_page, "red", "#8B0000", 32, 200, 1, 0, 20, 20)
-        self.widget_texts["quit"] = self.create_button(center_frame, self.get_text("quit"), self.quit, "#DAA520", "#B8860B", 32, 200, 2, 0, 20, 20)
+        self.widget_texts["login"] = self.create_button(center_frame, self.get_text("login"), self.login_page, "#41a500", "#286400", 32, 200, 0, 0, 20, 20)
+        self.widget_texts["signup"] = self.create_button(center_frame, self.get_text("signup"), self.signup_page, "#0055e0", "#002d77", 32, 200, 1, 0, 20, 20)
+        self.widget_texts["quit"] = self.create_button(center_frame, self.get_text("quit"), self.quit, "#ae0000", "#780000", 32, 200, 2, 0, 20, 20)
 
     def login_page(self):
         for widget in self.winfo_children():
@@ -145,8 +145,8 @@ class PasswordManager(ctk.CTk):
         self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 2, 0, 20, 5)
         password_entry = self.create_entry(center_frame, "...", 200, "*", 3, 0, 20, 0)
 
-        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.login(username_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 4, 0, 20, (20, 10))
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.welcome_page, "#DAA520", "#B8860B", 32, 200, 5, 0, 20, 0)
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.login(username_entry.get(), password_entry.get()), "#41a500", "#286400", 32, 200, 4, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.welcome_page, "#b48900", "#795c00", 32, 200, 5, 0, 20, 0)
 
         def focus_password(event):
             password_entry.focus_set()
@@ -178,8 +178,8 @@ class PasswordManager(ctk.CTk):
         self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 4, 0, 20, 5)
         password_entry = self.create_entry(center_frame, "...", 200, "*", 5, 0, 20, 0)
         
-        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.signup(username_entry.get(), email_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 6, 0, 20, (20, 10))
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.welcome_page, "#DAA520", "#B8860B", 32, 200, 7, 0, 20, 0)
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.signup(username_entry.get(), email_entry.get(), password_entry.get()), "#41a500", "#286400", 32, 200, 6, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.welcome_page, "#b48900", "#795c00", 32, 200, 7, 0, 20, 0)
         
         def focus_email(event):
             email_entry.focus_set()
@@ -206,10 +206,10 @@ class PasswordManager(ctk.CTk):
         center_frame = ctk.CTkFrame(self)
         center_frame.grid(row=1, column=0, padx=20, pady=20)
 
-        self.widget_texts["addpassword"] = self.create_button(center_frame, self.get_text("addpassword"), self.add_password_page, "green", "#006400", 32, 200, 0, 0, 20, 20)
-        self.widget_texts["mypasswords"] = self.create_button(center_frame, self.get_text("mypasswords"), self.my_passwords_page, "blue", "darkblue", 32, 200, 1, 0, 20, 20)
-        self.widget_texts["settings"] = self.create_button(center_frame, self.get_text("settings"), self.settings_page, "#DAA520", "#B8860B", 32, 200, 2, 0, 20, 20)
-        self.widget_texts["logout"] = self.create_button(center_frame, self.get_text("logout"), self.welcome_page, "red", "#8B0000", 32, 200, 3, 0, 20, 20)
+        self.widget_texts["addpassword"] = self.create_button(center_frame, self.get_text("addpassword"), self.add_password_page, "#41a500", "#286400", 32, 200, 0, 0, 20, 20)
+        self.widget_texts["mypasswords"] = self.create_button(center_frame, self.get_text("mypasswords"), self.my_passwords_page, "#0055e0", "#002d77", 32, 200, 1, 0, 20, 20)
+        self.widget_texts["settings"] = self.create_button(center_frame, self.get_text("settings"), self.settings_page, "#b48900", "#795c00", 32, 200, 2, 0, 20, 20)
+        self.widget_texts["logout"] = self.create_button(center_frame, self.get_text("logout"), self.welcome_page, "#ae0000", "#780000", 32, 200, 3, 0, 20, 20)
 
     def add_password_page(self):
         for widget in self.winfo_children():
@@ -238,8 +238,8 @@ class PasswordManager(ctk.CTk):
         self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 8, 0, 20, 5)
         password_entry = self.create_entry(center_frame, "...", 200, "*", 9, 0, 20, 0)
         
-        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.add_password(self.user_id, website_entry.get(), website_url.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#DAA520", "#B8860B", 32, 200, 10, 0, 20, (20, 10))
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#DAA520", "#B8860B", 32, 200, 11, 0, 20, 0)
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.add_password(self.user_id, website_entry.get(), website_url.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#41a500", "#286400", 32, 200, 10, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#b48900", "#795c00", 32, 200, 11, 0, 20, 0)
     
         def focus_website_url(event):
             website_url.focus_set()
@@ -307,7 +307,7 @@ class PasswordManager(ctk.CTk):
         
         self.widget_texts["mypasswords"] = self.create_label(center_frame, self.get_text("mypasswords"), ("Arial", 36, "bold"), 0, 0, 20, 20, "nw", 10)
         
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#DAA520", "#B8860B", 32, 100, 0, 7, (0, 10), 20, "ne", 2)
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#b48900", "#795c00", 32, 100, 0, 7, (0, 10), 20, "ne", 2)
 
         columns = ["Website", "Website URL", "Username", "Email", "Password", "Show"]
         
@@ -391,21 +391,27 @@ class PasswordManager(ctk.CTk):
 
         self.widget_texts["settings"] = self.create_label(center_frame, self.get_text("settings"), ("Arial", 36, "bold"), 0, 0, 20, (20, 0), "nw", 10)
 
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "red", "red", 32, 100, 0, 4, 20, (20, 0), "ne")
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#b48900", "#795c00", 32, 100, 0, 4, 20, (20, 0), "ne")
         
         # self.widget_texts["themecolor"] = self.create_label(center_frame, self.get_text("themecolor"), ("Arial", 24), 1, 0, 20, (20, 0), "w")
 
         themes = [
-            {"text": self.get_text("dark"), "theme": "dark"},
-            {"text": self.get_text("light"), "theme": "light"},
-            {"text": self.get_text("system"), "theme": "system"}
+            {"text": self.get_text("dark"), "theme": "dark", "bg_color": "#333333", "fg_color": "white"},
+            {"text": self.get_text("light"), "theme": "light", "bg_color": "#BBBBBB", "fg_color": "black"},
+            {"text": self.get_text("system"), "theme": "system", "bg_color": "#0078D7", "fg_color": "white"}
         ]
 
         self.widget_texts["themelabel"] = self.create_label(center_frame, self.get_text("themelabel"), ("Arial", 20), 1, 0, 20, 0, "w", 10)
 
         for index, theme in enumerate(themes):
-            # self.create_button(center_frame, theme["text"], lambda theme=theme: self.set_theme(theme["theme"]), "red", "red", 30, 50, 2, index+1, 0, 0)
-            self.widget_texts["theme"] = self.create_button(center_frame, theme["text"], "", "red", "red", 30, 80, 2, index, (20, 0), 0)
+            self.widget_texts[f"theme_{theme['theme']}"] = self.create_button(
+                center_frame, 
+                theme["text"], 
+                lambda theme=theme: self.set_theme(theme["theme"]), 
+                theme["bg_color"],
+                theme["fg_color"],
+                30, 80, 2, index, (20, 0), 0
+            )
 
         # colors = [
         #     {"text": self.get_text("blue"), "color": "blue"},
@@ -625,6 +631,16 @@ class PasswordManager(ctk.CTk):
             self.conn.commit()
             messagebox.showinfo(title_success, message_success)
             self.my_passwords_page()
+
+    def set_theme(self, theme):
+        self.current_theme = theme
+        ctk.set_appearance_mode(self.current_theme)
+
+        settings = self.load_settings()
+        settings["theme"] = self.current_theme
+
+        with open("data/settings.json", "w") as file:
+            json.dump(settings, file, indent=4)
 
     def change_language(self, language):
         self.language = language
