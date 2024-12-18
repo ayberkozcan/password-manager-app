@@ -37,9 +37,9 @@ class PasswordManager(ctk.CTk):
 
         self.connect_database()
         
-        # self.user_id=1
-        # self.my_passwords_page()
-        self.widgets()
+        self.user_id=1
+        self.my_passwords_page()
+        # self.widgets()
 
     def create_label(self, frame, text, font, row, column, padx, pady, sticky="w", columnspan=1):
         label = ctk.CTkLabel(
@@ -337,7 +337,7 @@ class PasswordManager(ctk.CTk):
                             if k == 6:
                                 password = passwords[j][0]
 
-                                password_label = ctk.CTkLabel(center_frame, text="******", font=("Arial", 12))
+                                password_label = ctk.CTkLabel(center_frame, text="**", font=("Arial", 12))
                                 password_label.grid(row=j+2, column=k-2, padx=5, pady=10, sticky="w")
 
                                 current_eye_state = {"icon": eye_blind_icon}
@@ -347,7 +347,7 @@ class PasswordManager(ctk.CTk):
                                         password_text = password
                                         current_eye_state["icon"] = eye_icon
                                     else:
-                                        password_text = "******"
+                                        password_text = "**"
                                         current_eye_state["icon"] = eye_blind_icon
                                     
                                     eye_button.configure(image=current_eye_state["icon"])
@@ -360,10 +360,80 @@ class PasswordManager(ctk.CTk):
                             else:
                                 self.create_label(center_frame, attribute, ("Arial", 12), j+2, k-2, 5, 10)
                             
-                edit_button = ctk.CTkButton(center_frame, image=edit_icon, width=30, height=30, corner_radius=50, text="", fg_color="green", hover="None")
+                edit_button = ctk.CTkButton(center_frame, image=edit_icon, width=30, height=30, corner_radius=50, text="", command=lambda id=password_logs[j][0]: self.edit_password_page(id), fg_color="green", hover="None")
                 edit_button.grid(row=j+2, column=k, padx=0, pady=10)    
                 delete_button = ctk.CTkButton(center_frame, image=delete_icon, width=30, height=30, corner_radius=50, text="", command=lambda id=password_logs[j][0]: self.delete_password(id), fg_color="red", hover="None")
                 delete_button.grid(row=j+2, column=k+1, padx=0, pady=10)    
+
+    def edit_password_page(self, id):
+        for widget in self.winfo_children():
+            widget.grid_forget()
+
+        password_details = self.cursor.execute("""SELECT * FROM passwords WHERE id = ?""", (id,)).fetchall()
+        website = password_details[0][2]
+        website_url = password_details[0][3]
+        username = password_details[0][4]
+        email = password_details[0][5]
+        password = password_details[0][6]
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        self.widget_texts["editpassword"] = self.create_label(self, self.get_text("editpassword"), ("Helvetica", 20), 0, 0, 20, 20, sticky="nsew")
+        
+        center_frame = ctk.CTkFrame(self)
+        center_frame.grid(row=1, column=0, padx=20, pady=20)
+
+        self.widget_texts["website"] = self.create_label(center_frame, self.get_text("website"), ("Helvetica", 15), 0, 0, 20, 5)
+        website_entry = self.create_entry(center_frame, "...", 200, "", 1, 0, 20, 0)
+        website_entry.insert(0, website)
+
+        self.widget_texts["websiteurloptional"] = self.create_label(center_frame, self.get_text("websiteurloptional"), ("Helvetica", 15), 2, 0, 20, 5)
+        website_url_entry = self.create_entry(center_frame, "...", 200, "", 3, 0, 20, 0)
+        website_url_entry.insert(0, website_url)
+
+        self.widget_texts["usernameoptional"] = self.create_label(center_frame, self.get_text("usernameoptional"), ("Helvetica", 15), 4, 0, 20, 5)
+        username_entry = self.create_entry(center_frame, "...", 200, "", 5, 0, 20, 0)
+        username_entry.insert(0, username)
+
+        self.widget_texts["emailoptional"] = self.create_label(center_frame, self.get_text("emailoptional"), ("Helvetica", 15), 6, 0, 20, 5)
+        email_entry = self.create_entry(center_frame, "...", 200, "", 7, 0, 20, 0)
+        email_entry.insert(0, email)
+
+        self.widget_texts["password"] = self.create_label(center_frame, self.get_text("password"), ("Helvetica", 15), 8, 0, 20, 5)
+        password_entry = self.create_entry(center_frame, "...", 200, "*", 9, 0, 20, 0)
+        password_entry.insert(0, password)
+
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.edit_password(self.user_id, website_entry.get(), website_url_entry.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#41a500", "#286400", 32, 200, 10, 0, 20, (20, 10))
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.my_passwords_page, "#b48900", "#795c00", 32, 200, 11, 0, 20, 0)
+    
+        def focus_website_url(event):
+            website_url_entry.focus_set()
+
+        def focus_username(event):
+            username_entry.focus_set()
+
+        def focus_email(event):
+            email_entry.focus_set()
+
+        def focus_password(event):
+            password_entry.focus_set()
+
+        def on_submit(event):
+            self.edit_password(
+                self.user_id,
+                website_entry.get(),
+                website_url_entry.get(),
+                username_entry.get(),
+                email_entry.get(),
+                password_entry.get()
+            )
+
+        website_entry.bind("<Return>", focus_website_url)
+        website_url_entry.bind("<Return>", focus_username)
+        username_entry.bind("<Return>", focus_email)
+        email_entry.bind("<Return>", focus_password)
+        password_entry.bind("<Return>", on_submit)
 
     def settings_page(self):
         for widget in self.winfo_children():
