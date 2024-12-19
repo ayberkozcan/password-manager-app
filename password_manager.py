@@ -278,21 +278,12 @@ class PasswordManager(ctk.CTk):
 
         center_frame = ctk.CTkScrollableFrame(self)
         center_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
-
-        center_frame.grid_rowconfigure(0, weight=1)
-        center_frame.grid_rowconfigure(1, weight=1)
-        center_frame.grid_rowconfigure(2, weight=1)
-        center_frame.grid_rowconfigure(3, weight=1)
-        center_frame.grid_rowconfigure(4, weight=1)
-        center_frame.grid_columnconfigure(0, weight=1)
-        center_frame.grid_columnconfigure(1, weight=1)
-        center_frame.grid_columnconfigure(2, weight=1)
-        center_frame.grid_columnconfigure(3, weight=1)
-        center_frame.grid_columnconfigure(4, weight=1)
-        center_frame.grid_columnconfigure(5, weight=1)
-        center_frame.grid_columnconfigure(6, weight=1)
-        center_frame.grid_columnconfigure(7, weight=1)
         
+        for i in range(5):
+            center_frame.grid_rowconfigure(i, weight=1)
+        for i in range(8):
+            center_frame.grid_columnconfigure(i, weight=1)
+
         edit_icon = PhotoImage(file=self.edit_icon_path)
         edit_icon = edit_icon.subsample(25, 25)
 
@@ -316,10 +307,7 @@ class PasswordManager(ctk.CTk):
         
         passwords = self.cursor.execute("""SELECT password FROM passwords WHERE user_id = :user_id""", {"user_id": self.user_id}).fetchall()
 
-        # eye_button = ctk.CTkButton(center_frame, image=eye_icon, width=30, height=30, corner_radius=50, text="", fg_color="transparent", hover="None")
-        # eye_blind_button = ctk.CTkButton(center_frame, image=eye_blind_icon, width=30, height=30, corner_radius=50, text="", command=lambda: show_password(password_id), fg_color="green", hover="None")
-
-        current_eye = eye_icon
+        current_eye = eye_blind_icon
 
         if not password_logs:
             self.widget_texts["nopasswords"] = self.create_label(center_frame, self.get_text("nopasswords"), ("Helvetica", 20), 1, 0, 0, 10)
@@ -337,7 +325,7 @@ class PasswordManager(ctk.CTk):
                             if k == 6:
                                 password = passwords[j][0]
 
-                                password_label = ctk.CTkLabel(center_frame, text="**", font=("Arial", 12))
+                                password_label = ctk.CTkLabel(center_frame, text="*********", font=("Arial", 12))
                                 password_label.grid(row=j+2, column=k-2, padx=5, pady=10, sticky="w")
 
                                 current_eye_state = {"icon": eye_blind_icon}
@@ -347,7 +335,7 @@ class PasswordManager(ctk.CTk):
                                         password_text = password
                                         current_eye_state["icon"] = eye_icon
                                     else:
-                                        password_text = "**"
+                                        password_text = "*********"
                                         current_eye_state["icon"] = eye_blind_icon
                                     
                                     eye_button.configure(image=current_eye_state["icon"])
@@ -370,6 +358,7 @@ class PasswordManager(ctk.CTk):
             widget.grid_forget()
 
         password_details = self.cursor.execute("""SELECT * FROM passwords WHERE id = ?""", (id,)).fetchall()
+        password_id = password_details[0][0]
         website = password_details[0][2]
         website_url = password_details[0][3]
         username = password_details[0][4]
@@ -404,7 +393,7 @@ class PasswordManager(ctk.CTk):
         password_entry = self.create_entry(center_frame, "...", 200, "*", 9, 0, 20, 0)
         password_entry.insert(0, password)
 
-        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.edit_password(self.user_id, website_entry.get(), website_url_entry.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#41a500", "#286400", 32, 200, 10, 0, 20, (20, 10))
+        self.widget_texts["submit"] = self.create_button(center_frame, self.get_text("submit"), lambda: self.edit_password(password_id, website_entry.get(), website_url_entry.get(), username_entry.get(), email_entry.get(), password_entry.get()), "#41a500", "#286400", 32, 200, 10, 0, 20, (20, 10))
         self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.my_passwords_page, "#b48900", "#795c00", 32, 200, 11, 0, 20, 0)
     
         def focus_website_url(event):
@@ -421,7 +410,7 @@ class PasswordManager(ctk.CTk):
 
         def on_submit(event):
             self.edit_password(
-                self.user_id,
+                password_id,
                 website_entry.get(),
                 website_url_entry.get(),
                 username_entry.get(),
@@ -453,7 +442,7 @@ class PasswordManager(ctk.CTk):
             else:
                 center_frame.grid_rowconfigure(i, weight=1)
 
-        for i in range(3):
+        for i in range(10):
             if i < 3:
                 center_frame.grid_columnconfigure(i, weight=1)
             else:
@@ -461,7 +450,7 @@ class PasswordManager(ctk.CTk):
 
         self.widget_texts["settings"] = self.create_label(center_frame, self.get_text("settings"), ("Arial", 36, "bold"), 0, 0, 20, (20, 0), "nw", 10)
 
-        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#b48900", "#795c00", 32, 100, 0, 4, 20, (20, 0), "ne")
+        self.widget_texts["goback"] = self.create_button(center_frame, self.get_text("goback"), self.homepage, "#b48900", "#795c00", 32, 100, 0, 9, 20, (20, 0), "ne")
         
         # self.widget_texts["themecolor"] = self.create_label(center_frame, self.get_text("themecolor"), ("Arial", 24), 1, 0, 20, (20, 0), "w")
 
@@ -551,22 +540,22 @@ class PasswordManager(ctk.CTk):
 
         if value_exists("username", username):
             messagebox.showerror(
-                "Error",
-                "This username already exists!"
+                self.get_text("error_title"),
+                self.get_text("username_exists_message")
             )
             return
 
         if len(username) < 5 or len(username) > 20:
             messagebox.showerror(
-                "Error",
-                "Username must be 5-20 characters long!"
+                self.get_text("error_title"),
+                self.get_text("username_length_message")
             )
             return
 
         if value_exists("email", email):
             messagebox.showerror(
-                "Error",
-                "This email already exists!"
+                self.get_text("error_title"),
+                self.get_text("email_exists_message")
             )
             return
 
@@ -574,15 +563,15 @@ class PasswordManager(ctk.CTk):
 
         if not re.match(email_regex, email):
             messagebox.showerror(
-                "Error",
-                "Invalid email format!"
+                self.get_text("error_title"),
+                self.get_text("invalid_email_message")
             )
             return
 
         if len(password) < 5 or len(password) > 20:
             messagebox.showerror(
-                "Error",
-                "Password must be 5-20 characters long!"
+                self.get_text("error_title"),
+                self.get_text("password_length_message")
             )
             return
 
@@ -599,8 +588,8 @@ class PasswordManager(ctk.CTk):
         self.conn.commit()
 
         messagebox.showinfo(
-            "Success",
-            "Successfully signed up!"
+            self.get_text("success_title"),
+            self.get_text("success_signup_message")
         )
         self.login_page()
 
@@ -616,8 +605,8 @@ class PasswordManager(ctk.CTk):
 
         if not value_check("username", username):
             messagebox.showerror(
-                "Error",
-                "This username does not exist!"
+                self.get_text("error_title"),
+                self.get_text("username_doesnt_exist_message")
             )
             return
 
@@ -632,8 +621,8 @@ class PasswordManager(ctk.CTk):
 
         if stored_password and hashed_password == stored_password[0]:
             messagebox.showinfo(
-                "Success",
-                "Successfully logged in!"
+                self.get_text("success_title"),
+                self.get_text("success_login_message")
             )
 
             self.user_id = self.cursor.execute("""
@@ -649,22 +638,22 @@ class PasswordManager(ctk.CTk):
             self.homepage()
         else:
             messagebox.showerror(
-                "Error",
-                "Incorrect Password!"
+                self.get_text("error_title"),
+                self.get_text("incorrect_password_message")
             )
             return
 
     def add_password(self, user_id, website, website_url, username, email, password):
         if not website:
             messagebox.showerror(
-                "Error",
-                "Website can not be empty!"
+                self.get_text("error_title"),
+                self.get_text("empty_website_message")
             )
             return
         if not password:
             messagebox.showerror(
-                "Error",
-                "Password can not be empty!"
+                self.get_text("error_title"),
+                self.get_text("empty_password_message")
             )
             return
         
@@ -682,11 +671,34 @@ class PasswordManager(ctk.CTk):
         self.conn.commit()
 
         messagebox.showinfo(
-            "Success",
-            "Successful!"
+            self.get_text("success_title"),
+            self.get_text("password_added_message")
         )
 
         self.add_password_page()
+
+    def edit_password(self, id, website, website_url, username, email, password):
+        self.cursor.execute("""
+            UPDATE passwords 
+            SET website = :website, website_url = :website_url,
+            username = :username, email = :email, password = :password
+            WHERE id = :id
+        """, {
+            "website": website,
+            "website_url": website_url,
+            "username": username,
+            "email": email,
+            "password": password,
+            "id": id
+        })
+        self.conn.commit()
+
+        messagebox.showinfo(
+            self.get_text("success_title"),
+            self.get_text("password_updated_message")
+        )
+
+        self.my_passwords_page()
 
     def delete_password(self, id):
         title_confirm = self.get_text("delete_password_title")
