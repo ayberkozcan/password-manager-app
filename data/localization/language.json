@@ -37,7 +37,23 @@
         "dark-blue": "Dark Blue",
         "green": "Green",
         "colorlabel": "Color",
-        "language": "Language"
+        "language": "Language",
+
+        "success_title": "Success",
+        "error_title": "Error",
+        "username_exists_message": "This username already exists!",
+        "username_length_message": "Username must be 5-20 characters long!",
+        "email_exists_message": "This email already exists!",
+        "invalid_email_message": "Invalid email format!",
+        "password_length_message": "Password must be 5-20 characters long!",
+        "success_signup_message": "Successfully signed up!",
+        "username_doesnt_exist_message": "This username does not exists!",
+        "success_login_message": "Successfully logged in!",
+        "incorrect_password_message": "Incorrect Password!",
+        "empty_website_message": "Website can not be empty!",
+        "empty_password_message": "Password can not be empty!",
+        "password_added_message": "Password added successfully",
+        "password_updated_message": "Password updated successfully"
     },
     "tr": {
         "secure": "Şifrelerinizi güvenli bir şekilde saklayın ve yönetin",
@@ -77,7 +93,23 @@
         "dark-blue": "Koyu Mavi",
         "green": "Yeşil",
         "colorlabel": "Renk",
-        "language": "Dil"
+        "language": "Dil",
+
+        "success_title": "Başarılı",
+        "error_title": "Hata",
+        "username_exists_message": "Bu kullanıcı adı zaten mevcut!",
+        "username_length_message": "Kullanıcı adı 5-20 karakter uzunluğunda olmalıdır!",
+        "email_exists_message": "Bu e-posta adresi zaten mevcut!",
+        "invalid_email_message": "Geçersiz e-posta formatı!",
+        "password_length_message": "Şifre 5-20 karakter uzunluğunda olmalıdır!",
+        "success_signup_message": "Başarıyla kayıt oldunuz!",
+        "username_doesnt_exist_message": "Bu kullanıcı adı mevcut değil!",
+        "success_login_message": "Başarıyla giriş yaptınız!",
+        "incorrect_password_message": "Hatalı şifre!",
+        "empty_website_message": "Web sitesi boş olamaz!",
+        "empty_password_message": "Şifre boş olamaz!",
+        "password_added_message": "Şifre başarıyla eklendi",
+        "password_updated_message": "Şifre başarıyla güncellendi"
     },
     "de": {
         "secure": "Speichern und verwalten Sie Ihre Passwörter sicher",
@@ -117,6 +149,22 @@
         "dark-blue": "Dunkelblau",
         "green": "Grün",
         "colorlabel": "Farbe",
-        "language": "Sprache"
+        "language": "Sprache",
+
+        "success_title": "Erfolg",
+        "error_title": "Fehler",
+        "username_exists_message": "Dieser Benutzername existiert bereits!",
+        "username_length_message": "Der Benutzername muss 5-20 Zeichen lang sein!",
+        "email_exists_message": "Diese E-Mail-Adresse existiert bereits!",
+        "invalid_email_message": "Ungültiges E-Mail-Format!",
+        "password_length_message": "Das Passwort muss 5-20 Zeichen lang sein!",
+        "success_signup_message": "Erfolgreich registriert!",
+        "username_doesnt_exist_message": "Dieser Benutzername existiert nicht!",
+        "success_login_message": "Erfolgreich eingeloggt!",
+        "incorrect_password_message": "Falsches Passwort!",
+        "empty_website_message": "Die Website darf nicht leer sein!",
+        "empty_password_message": "Das Passwort darf nicht leer sein!",
+        "password_added_message": "Passwort erfolgreich hinzugefügt",
+        "password_updated_message": "Passwort erfolgreich aktualisiert"
     }
 }
